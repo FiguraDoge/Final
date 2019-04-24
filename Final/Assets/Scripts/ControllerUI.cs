@@ -25,7 +25,7 @@ public class ControllerUI : MonoBehaviour
     private void HandlePointerClick(object sender, PointerEventArgs e)
     {
         var button = e.target.GetComponent<Button>();
-        if (button != null)
+        if (button != null && button.interactable)
         {
             button.onClick.Invoke();
         }

@@ -59,6 +59,7 @@ public class Dock_Water : MonoBehaviour
                     player.transform.position = landPosition.position;      // Move player to the ground 
                     playerManager.setGravity(true);                         // Set gravity to true since player is on ground now
                     playerManager.setTeleport(true);                        // Enable teleporting again
+                    playerManager.setLaserPointer(false);
 
                     // Process Boat
                     GameObject boat = playerManager.getBoat();

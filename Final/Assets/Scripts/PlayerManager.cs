@@ -19,6 +19,9 @@ public class PlayerManager : MonoBehaviour
     public GameObject teleport;
     public GameObject blackScreen;      // For falling -> line 94
 
+    private bool fadingBlack;
+    private bool fadingIn;
+
     private Vector3 respawn;            // For falling -> line 52
     private GameObject boat;
     private Rigidbody playerRB;
@@ -63,23 +66,23 @@ public class PlayerManager : MonoBehaviour
 
         if (val)
         {
-            holder.SetActive(true);
-            pointer.SetActive(true);
+            if (holder != null) holder.SetActive(true);
+            if (pointer != null) pointer.SetActive(true);
             leftHand.GetComponent<SteamVR_LaserPointer>().enabled = true;
 
-            holder2.SetActive(true);
-            pointer2.SetActive(true);
+            if (holder2 != null) holder2.SetActive(true);
+            if (pointer2 != null) pointer2.SetActive(true);
             rightHand.GetComponent<SteamVR_LaserPointer>().enabled = true;
         }
         else
         {
             leftHand.GetComponent<SteamVR_LaserPointer>().enabled = false;
-            holder.SetActive(false);
-            pointer.SetActive(false);
+            if (holder != null) holder.SetActive(false);
+            if (pointer != null) pointer.SetActive(false);
 
             rightHand.GetComponent<SteamVR_LaserPointer>().enabled = false;
-            holder2.SetActive(false);
-            pointer2.SetActive(false);
+            if (holder2 != null)  holder2.SetActive(false);
+            if (pointer2 != null) pointer2.SetActive(false);
         }
     }
 
@@ -88,12 +91,68 @@ public class PlayerManager : MonoBehaviour
         playerRB = this.gameObject.GetComponent<Rigidbody>();
         respawn = this.transform.position;
         setLaserPointer(false);
+
+        fadingBlack = false;
+        fadingIn = false;
     }
 
     // For falling
     // I made a respawn point prefab for you to test the falling and respawn
     void Update()
     {
-
+        if (playerRB.velocity.y < -4) //check for if player is falling
+        {
+            fadingBlack = true; //set to true to call the fading object
+            playerRB.velocity = new Vector3(0, 0, 0); //set the velocity to 0 so player stops falling
+            setGravity(false); //turn gravity off so player stops falling
+        }
+        if (fadingBlack) //call fade() if necessary
+        {
+            fade();
+        }
+        if (fadingIn) //call fadingIn() if necessary
+        {
+            fadeIn();
+        }
     }
+
+    public void fade() //Fades the black screen in
+    {
+        if (blackScreen.transform.localScale.x < .5 || blackScreen.transform.localScale.z < .5)
+        {
+            blackScreen.transform.localScale += new Vector3(.005f, 0, .005f);
+            if (blackScreen.transform.localScale.x > .5 || blackScreen.transform.localScale.z > .5)
+            {
+                fadingBlack = false;
+                fadingIn = true;
+                setGravity(true);
+                transform.position = respawn;
+            }
+        }
+        else
+        {
+            fadingBlack = false;
+            fadingIn = true;
+            setGravity(true);
+            transform.position = respawn;
+        }
+    }
+
+    public void fadeIn() //Fades the black screen out (the name of the function is a little misleading but you get the point :P )
+    {
+        if (blackScreen.transform.localScale.x > 0 || blackScreen.transform.localScale.z > 0)
+        {
+            blackScreen.transform.localScale -= new Vector3(.005f, 0, .005f);
+            if (blackScreen.transform.localScale.x < 0 || blackScreen.transform.localScale.z < 0)
+            {
+                fadingIn = false;
+                blackScreen.transform.localScale = new Vector3(0, 1, 0);
+            }
+        }
+        else
+        {
+            fadingIn = false;
+        }
+    }
+
 }

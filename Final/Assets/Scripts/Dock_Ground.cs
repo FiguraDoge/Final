@@ -87,5 +87,6 @@ public class Dock_Ground : MonoBehaviour
     {
         text.text = "";
         buttonObj.SetActive(false);
+        playerManager.setLaserPointer(false);
     }
 }
